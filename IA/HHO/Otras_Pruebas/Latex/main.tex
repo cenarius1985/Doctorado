@@ -1,0 +1,278 @@
+\listfiles
+\documentclass[final,5p,times,twocolumn]{elsarticle}
+\usepackage{adjustbox}
+\usepackage{algorithm,algorithmic}
+\usepackage{amsfonts}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{color,colortbl}
+\usepackage{comment}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{mathrsfs}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage{svg}
+\usepackage{cite}
+\usepackage[style=authoryear]{biblatex}
+\addbibresource{references.bib}
+\usepackage{biblatex}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.5}
+\usepgfplotslibrary{external}
+\tikzexternalize
+
+\hypersetup{
+ colorlinks=true,
+ linkcolor=black,
+ urlcolor=black,
+ filecolor=black,      
+ pdfpagemode=FullScreen,
+}
+\pdfstringdefDisableCommands{%
+  \def\corref#1{}%
+}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{Algoritmo de Optimización de Harris Hawks: Inspiración de la Naturaleza para la Resolución de Problemas: Bin Packing}
+
+\author[uv]{Fernando José Ramírez Sarmiento\corref{cor}}
+
+\address[uv]{Escuela de Ingenier\'ia Inform\'atica, Universidad de Valpara\'iso, Valpara\'iso, Chile.}
+\cortext[cor]{Corresponding author}\ead{fernando.ramirezs@postgrado.uv.cl}
+
+\begin{abstract}
+En este estudio,\autocite{Fernando2023} presentamos una innovadora aplicación del Harris Hawks Optimizer (HHO) para abordar el desafiante problema de optimización de bin packing. El algoritmo HHO, inspirado en el comportamiento de caza cooperativa de los halcones de Harris, ha mostrado un notable rendimiento en una variedad de problemas de optimización. En el caso del bin packing, utilizamos el HHO para optimizar la disposición de objetos de diferentes tamaños en el mínimo número de contenedores, minimizando así el espacio no utilizado.
+El HHO imita los patrones dinámicos y las estrategias de persecución de los halcones de Harris para desarrollar una potente técnica de optimización. Los halcones utilizan tácticas cooperativas para cazar, abordando a su presa desde diferentes direcciones en un intento por sorprenderla. Hemos aplicado esta estrategia a nuestro algoritmo para imitar estos comportamientos y patrones dinámicos en el contexto del problema de bin packing.
+Un hallazgo interesante de nuestra investigación se refiere a la relación entre el número de contenedores y el número de iteraciones. Al examinar esta relación, encontramos que el algoritmo alcanza un resultado óptimo a partir de la segunda iteración, indicando una eficiencia considerable en la optimización del problema de bin packing.
+\end{abstract}
+
+
+\begin{keyword}
+HHO \sep kw2 \sep kw3 
+\end{keyword}
+
+\end{frontmatter}
+
+%------------------------------------
+\section{Introduction}
+\label{sec:in}
+Los algoritmos bio-inspirados son técnicas de computación que buscan imitar los procesos biológicos, comportamientos y fenómenos naturales para resolver problemas complejos. Estos algoritmos están inspirados en la biología y se aplican principalmente en áreas como la optimización, la minería de datos, la inteligencia artificial y el aprendizaje automático.
+Las ventajas de los algoritmos bio-inspirados incluyen:
+1.Capacidad para resolver problemas complejos: Los algoritmos bio-inspirados se utilizan ampliamente para resolver problemas de optimización que son difíciles de resolver mediante técnicas tradicionales.
+2.Tolerancia al ruido y a las perturbaciones: Los algoritmos bio-inspirados son robustos frente a las perturbaciones y al ruido, lo que los hace especialmente útiles en aplicaciones del mundo real.
+3.Búsqueda global y local: Estos algoritmos son capaces de realizar tanto una búsqueda global como local en el espacio de soluciones. Esto significa que pueden explorar el espacio de soluciones en su totalidad, al tiempo que se centran en las áreas de alta calidad para encontrar la solución óptima.
+4.Paralelismo: Muchos algoritmos bio-inspirados son inherentemente paralelos, lo que significa que pueden evaluar múltiples soluciones al mismo tiempo. Esto los hace muy eficientes en términos de tiempo de cálculo.
+5.Adaptabilidad: Los algoritmos bio-inspirados son adaptativos, es decir, pueden ajustar sus parámetros durante la ejecución para adaptarse al problema que se está resolviendo. Esto los hace muy flexibles y eficientes para resolver una amplia gama de problemas.
+6.No requieren información previa: La mayoría de estos algoritmos no requieren conocimiento previo del problema que se está resolviendo, lo que significa que pueden aplicarse a una amplia variedad de problemas.
+7.Capacidad para evitar mínimos locales: Muchos problemas de optimización tienen múltiples soluciones locales óptimas. Los algoritmos bio-inspirados son capaces de evitar quedar atrapados en estas soluciones y continuar buscando la solución global óptima.
+8.Versatilidad**: Estos algoritmos se pueden aplicar a una amplia gama de problemas, desde la optimización hasta la minería de datos y el aprendizaje automático, y pueden manejar problemas con restricciones complejas y objetivos múltiples.
+
+Existen varios algoritmos de optimización inspirados en la naturaleza. Estos son algunos de los más populares:
+Algoritmo Genético (AG): Se inspira en la teoría de la evolución natural y la genética. Los AGs se utilizan para encontrar soluciones a problemas de optimización y búsqueda mediante técnicas inspiradas en la selección natural, como la herencia, la mutación, la selección y el cruce.
+Algoritmo de Colonia de Hormigas (ACO): Basado en el comportamiento de las hormigas en la búsqueda de alimentos. Este algoritmo se utiliza para encontrar caminos óptimos en gráficos.
+Algoritmo de Enjambre de Partículas (PSO): Inspirado en el comportamiento de los pájaros en bandada. El PSO es una técnica de optimización que se utiliza para encontrar el óptimo global en un espacio de búsqueda.
+Algoritmo de Colonia de Abejas (ABC): Se inspira en el comportamiento de las abejas para encontrar el lugar óptimo para una fuente de néctar. Es útil para problemas de optimización multimodales.
+El problema de empaquetamiento en contenedores, conocido como Bin Packing en inglés, es uno de los problemas de optimización más comunes y desafiantes. En su forma más simple, implica tratar de encajar una serie de elementos de diferentes volúmenes en un número mínimo de "contenedores" o "bins", cada uno con un volumen limitado.
+Este problema, aunque aparentemente sencillo, es de hecho un problema NP-duro, lo que significa que no existe una solución eficiente para resolverlo exactamente en todos los casos. En consecuencia, se han desarrollado una serie de algoritmos heurísticos y metaheurísticos para resolver el problema de forma aproximada en un tiempo razonable.
+
+Entre estos algoritmos metaheurísticos se encuentra la Optimización de Halcones de Harris (Harris Hawks Optimization, HHO), que es un algoritmo inspirado en la naturaleza y que simula el comportamiento de caza cooperativa de los halcones de Harris. Estos pájaros son conocidos por su inteligencia y estrategias de caza coordinadas, características que se aprovechan en el algoritmo HHO para encontrar soluciones eficientes a problemas de optimización complejos, como el problema de empaquetamiento en contenedores.
+%------------------------------------
+\section{Related work}
+\label{sec:rw}
+La optimización de Harris Hawks (HHO) es un algoritmo metaheurístico basado en la naturaleza, que imita el comportamiento de caza cooperativa de los halcones de Harris. Este algoritmo ha demostrado ser muy eficaz para resolver problemas de optimización complejos, debido a su habilidad para equilibrar entre la exploración del espacio de soluciones y la explotación de las mejores soluciones encontradas. A continuación, se describe el algoritmo HHO en detalle.
+
+1.Fase de exploración:En esta fase, el algoritmo HHO imita el comportamiento de los halcones de Harris mientras buscan a su presa. Las soluciones candidatas en el algoritmo son tratadas como halcones, mientras que la mejor solución encontrada hasta el momento es tratada como la presa. Los halcones (soluciones) se sitúan aleatoriamente y esperan detectar la presa. Dos estrategias se utilizan aquí: la primera es posarse cerca de otros miembros del grupo y la presa, mientras que la segunda es posarse en lugares aleatorios. La posición de los halcones se actualiza utilizando una ecuación matemática que toma en cuenta la posición del mejor halcón (presa) y la posición promedio de los halcones.
+
+2.Transición de la exploración a la explotación:La transición de la exploración a la explotación en el algoritmo HHO se realiza mediante el modelado de la energía de escape de la presa. Como en la vida real, la energía de la presa disminuye durante el comportamiento de escape. Cuando la energía de escape es alta, el algoritmo se enfoca en la exploración, mientras que cuando es baja, el algoritmo se enfoca en la explotación.
+
+3.Fase de explotación:En esta fase, los halcones de Harris (soluciones) atacan a la presa (la mejor solución encontrada hasta el momento). Dependiendo de la energía restante de la presa, los halcones pueden realizar un asedio suave o un asedio duro. Un asedio suave ocurre cuando la presa aún tiene suficiente energía, por lo que los halcones rodean a la presa suavemente para agotar su energía. Por otro lado, un asedio duro ocurre cuando la presa está agotada, en cuyo caso los halcones rodean a la presa de cerca para finalmente atacar.
+
+Cabe mencionar que la aleatoriedad juega un papel crucial en este algoritmo. Se utilizan números aleatorios en varias etapas del algoritmo para imitar la naturaleza aleatoria del comportamiento de los halcones y su presa.
+
+\textbf{Proceso Conceptual del Algoritmo:}
+
+1. Inicio
+
+2. Generar soluciones iniciales: Se generan múltiples soluciones iniciales aleatorias, donde cada solución representa una asignación de ítems a contenedores.
+
+3. Calcular el costo de cada solución: Se calcula el costo de cada solución, que representa el número de contenedores utilizados en esa solución.
+
+4. Encontrar la mejor solución: Se identifica la mejor solución hasta el momento, que es aquella con el menor costo.
+
+5. Almacenar el número de bins de la mejor solución en cada iteración.
+
+6. Repetir hasta alcanzar el número máximo de iteraciones:
+
+\textbf{Fase de Exploración:}
+
+a. Generar nuevas soluciones en la vecindad de las soluciones actuales utilizando una estrategia de exploración.
+
+b. Evaluar el costo de las nuevas soluciones.
+c. Actualizar las soluciones actuales si se encuentra una solución mejor.
+
+\textbf{Transición de la Exploración a la Explotación:}
+
+
+a. Calcular la energía de escape de la presa, que disminuye a lo largo de las iteraciones.
+
+b. Si la energía de escape es mayor o igual a un umbral predefinido, el algoritmo se encuentra en la fase de Exploración.
+
+c. Si la energía de escape es menor que el umbral, el algoritmo se encuentra en la fase de Explotación.
+
+\textbf{Fase de Explotación:}
+Generar nuevas soluciones en la vecindad de las soluciones actuales utilizando una estrategia de explotación.
+Evaluar el costo de las nuevas soluciones.
+Actualizar las soluciones actuales si se encuentra una solución mejor.
+Fin del ciclo de iteraciones.
+Devolver la mejor solución encontrada y el número de bins de la mejor solución en cada iteración.
+%------------------------------------
+\section{Preliminaries}
+\label{sec:pl}
+
+Donec varius placerat diam, ac condimentum lorem commodo a. Integer nibh enim, ultrices vel ornare quis, sodales eget sapien. Vivamus sit amet felis volutpat, fringilla elit vel, rutrum leo. Quisque vitae cursus felis. Sed elementum sapien luctus arcu euismod posuere. Donec lectus purus, condimentum a neque ut, posuere consequat dui. Ut ipsum enim, tincidunt vitae cursus sit amet, lacinia in nisl. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin tincidunt orci a mauris imperdiet vulputate. Morbi ac purus vehicula, posuere leo pretium, semper quam. Interdum et malesuada fames ac ante ipsum primis in faucibus (Algorithm~\ref{alg:sim}). 
+
+\begin{algorithm}[!ht]
+    \begin{algorithmic}[1]
+        \REQUIRE problem input data, $popSize$, $T$
+        \ENSURE a set of efficient solutions that resolve the multi-objective IMP.
+        \STATE loadProblemData()
+        \STATE \COMMENT{the $D$ value defines the number of nodes of the IMP.}
+        \STATE objective functions $f_{1}(x)$ and $f_{2}(x)$, $x=\langle x^{1},\ldots,x^{D} \rangle$. 
+        \STATE \COMMENT{produce the first generation of $popSize$ agents}
+        \FORALL {agent $a_{i},(\forall\;i = \{1,\ldots,popSize\})$}
+            \FORALL {dimension $d,\;(\forall\;d = \{1,\ldots,D\})$}
+                \STATE position $x_{i}^{d} \leftarrow Random\{0,1\}$
+                \STATE velocity $v_{i}^{d} \leftarrow Random\{0,1\}$
+            \ENDFOR
+            \STATE maximize \{$f_{1}(x_{i});-f_{2}(x_{i})$\}
+        \ENDFOR
+        \STATE \COMMENT{produce $T$-generations of $popSize$ agents}
+        \WHILE {$t < T$}
+            \FORALL {agent $a_{i},(\forall\;i = \{1,\ldots,popSize\})$}
+                \IF {the diversification process is invoked}
+                    \STATE position $x_{i}^{d}$ is modified to explore more promising regions
+                \ENDIF
+                \IF {the intensification process is invoked}
+                    \STATE a new position $x_{i}^{d}$ is selected among the best solutions
+                \ENDIF
+                \STATE maximize \{$f_{1}(x_{i});-f_{2}(x_{i})$\}
+            \ENDFOR
+            \FORALL {agent $a_{i},(\forall\;i = \{1,\ldots,popSize\})$}
+                \FORALL {dimension $d,\;(\forall\;d = \{1,\ldots,D\})$}
+                    \STATE \COMMENT {generate new solutions}
+                    \STATE velocity $v_{i}^{d}$ is updated according to the distance between the best and current velocity.
+                    \STATE position $x_{i}^{d}$ is updated as fallows: $x_{i}^{d} = x_{i}^{d} + v_{i}^{d}$
+                    \STATE \COMMENT {then, position value must be brought to a binary domain}
+                    \IF {$\dfrac{1}{1 + e^{-x_{i}^{d}}} > Random[0,1)$}
+                        \STATE $x_{i}^{d} \leftarrow 1$
+                    \ELSE
+                        \STATE $x_{i}^{d} \leftarrow 0$
+                    \ENDIF
+                \ENDFOR
+                \STATE maximize \{$f_{1}(x_{i});-f_{2}(x_{i})$\}
+            \ENDFOR
+        \ENDWHILE
+        \RETURN post-process results and visualization
+    \end{algorithmic}
+    \caption{Common structure for a swarm intelligence method.}\label{alg:sim}
+\end{algorithm}
+
+Sed egestas arcu quis egestas bibendum. Aenean non lacus rutrum erat congue vestibulum in non quam. Vivamus tristique maximus purus quis volutpat. Etiam neque orci, tempor et sollicitudin vitae, lobortis eget quam. Maecenas dapibus commodo quam a condimentum. Sed varius, justo in laoreet efficitur, ex elit porta quam, in commodo elit diam vel dui. Mauris eget tortor commodo mauris blandit vulputate (Eq (\ref{eq:v})). 
+
+\begin{equation}\label{eq:v}
+v_{i}^{t+1} = \omega v_{i}^{t} + \alpha \epsilon_{1} [g^{*} - x_{i}^{t}] + \beta \epsilon_{2}[p_{i}^{*} - x_{i}^{t}]
+\end{equation}
+
+Cras accumsan neque quis nisi fringilla accumsan vitae vitae ipsum. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nullam finibus scelerisque hendrerit. Ut augue ligula, faucibus ut porttitor in, semper nec orci. Nunc molestie est nulla, nec efficitur nibh vehicula eu. Nunc tempor tincidunt dui. Donec ullamcorper ornare mauris, id sodales tortor posuere sit amet (Eq (\ref{eq:p})).
+
+\begin{equation}\label{eq:p}
+x_{i}^{t+1} = x_{i}^{t} + v_{i}^{t+1}.
+\end{equation}
+
+Quisque efficitur leo sapien, id dictum eros scelerisque sit amet. Fusce hendrerit nulla sed ligula consequat laoreet. Fusce cursus ligula eu mattis vehicula. Ut placerat a enim vitae suscipit. Nam non sapien consequat, ornare tortor a, hendrerit lacus. Morbi aliquet ut sem eleifend pharetra. Vestibulum sed metus at libero viverra condimentum sed eget metus.
+
+%------------------------------------
+\section{Developed solution} 
+\label{sec:ds}
+
+Aliquam tortor ipsum, faucibus quis tincidunt placerat, venenatis sit amet odio. Aliquam dapibus tellus in placerat ornare. Sed maximus elit at erat congue egestas. Mauris id porta nisl. Suspendisse maximus hendrerit eros quis malesuada. Morbi nec varius leo. Pellentesque molestie sollicitudin ultrices. Ut elementum posuere tellus, sit amet dapibus mauris tempor pharetra. Duis tincidunt leo ac rhoncus semper. Nullam quis enim nec libero efficitur mattis ut condimentum nibh. Nulla imperdiet turpis non quam ornare, sed auctor erat laoreet. Nunc laoreet dictum ex, vel tempus nisi blandit et. Phasellus varius libero quis elementum fringilla. Proin sit amet interdum nisl, sit amet maximus nunc. Vivamus dictum turpis rutrum ex commodo, in congue quam suscipit.
+
+Sed ullamcorper finibus lectus ut porta. Ut neque tellus, interdum at turpis eget, pellentesque accumsan lectus. Vestibulum cursus augue ante, eget commodo nibh sagittis sit amet. Morbi faucibus, purus vitae dignissim ultricies, augue leo porttitor lorem, vel commodo ipsum orci in sapien. Phasellus vehicula quis mi eget aliquam. Suspendisse lacus dui, posuere lobortis imperdiet in, ultrices ut quam. Duis faucibus ipsum vel dolor venenatis venenatis. Etiam sit amet turpis at velit scelerisque egestas a eu nibh. Nam mauris turpis, auctor vitae elit nec, congue aliquam tortor. Nulla facilisi. Ut pretium fringilla risus vel semper. Donec pellentesque, dolor sed posuere interdum, arcu turpis vestibulum leo, in suscipit eros massa at felis. Quisque in fringilla diam, eu placerat quam. Phasellus at diam fermentum, scelerisque erat nec, maximus arcu. Fusce vehicula efficitur mollis. Phasellus placerat imperdiet augue, nec placerat dolor cursus eu (Table~\ref{tbl:d}).
+
+\begin{table}[!ht]
+    \centering
+    \begin{adjustbox}{max width=\linewidth}
+    \begin{tabular}{clccp{30ex}} 
+    \toprule
+        ID & Name & $n$ & $m$ \\ 
+    \midrule
+        ID1 & Name 1 & -- & -- \\
+        ID2 & Name 2 & -- & -- \\
+    \bottomrule
+    \end{tabular}
+    \end{adjustbox}
+    \caption{Caption of the table.}
+    \label{tbl:d}
+\end{table}
+
+Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Praesent et orci non tortor lacinia tempus cursus in ligula. Etiam nisi ex, dignissim vel gravida in, placerat sed orci. Nunc eu viverra mi. Praesent sit amet magna non turpis varius laoreet in quis dolor. Pellentesque aliquet auctor mauris aliquet tincidunt. Mauris vel nibh imperdiet, cursus leo quis, porta risus. Praesent posuere purus ligula, sit amet accumsan sem ultricies sit amet. Vivamus ac ipsum lacus.
+
+Quisque eu egestas diam. Nulla placerat ex eu efficitur consectetur. Aliquam lacinia efficitur lectus non scelerisque. Nulla convallis metus at est aliquam venenatis. Aliquam quis vehicula magna. Praesent fermentum nisi in interdum sodales. Praesent nec pellentesque ligula, et vulputate ex. Donec tincidunt erat egestas, ultrices augue id, lobortis sem. Quisque ullamcorper semper augue at auctor. Aliquam ac consequat sem. Praesent eu sagittis dui, at vulputate lectus.
+
+Aenean orci ipsum, posuere quis blandit in, dapibus vitae dolor. Aliquam non nulla hendrerit justo pellentesque venenatis id ac eros. Curabitur lectus dui, consequat ac sagittis id, fringilla id nibh. Aliquam sit amet arcu eget nisl scelerisque porttitor quis vitae quam. Quisque blandit ligula ut efficitur dapibus. Nullam sem orci, convallis ac lorem ut, tincidunt malesuada nunc. Morbi sed tortor et tellus accumsan ornare quis sed mi. Mauris eget arcu nec quam dignissim mollis in nec elit. Vivamus tincidunt malesuada sapien. Mauris volutpat magna in nisl rhoncus, sed luctus risus commodo. Nam at ante ac elit ullamcorper eleifend vel non mauris. Maecenas tincidunt vel ipsum ut tristique. Quisque non urna vel purus sollicitudin vestibulum. Aenean ut enim ligula.
+
+%------------------------------------
+\section{Experimental setup}
+\label{sec:ex}
+
+Suspendisse gravida leo lacinia, egestas felis et, tincidunt quam. Fusce a ex in lorem porttitor mattis. Donec venenatis risus sapien, in semper ex tempus in. In facilisis leo nisi, ac dapibus tellus auctor non. Nunc maximus luctus elit, id aliquam felis volutpat id. Aenean nisi velit, laoreet interdum rhoncus ut, bibendum vel ex. Mauris vel velit ac dui feugiat pulvinar non sed augue. Suspendisse porttitor lectus nec elit accumsan, quis ullamcorper nunc cursus. Phasellus sapien arcu, semper a mi non, fermentum efficitur eros. Quisque facilisis mi ac magna facilisis commodo. Nunc at dolor aliquam, sodales nunc eu, venenatis enim. Cras sed porta ex. Etiam facilisis, libero vitae pellentesque semper, quam orci suscipit eros, in tincidunt dui nibh nec justo. Morbi aliquet massa vel dolor tincidunt laoreet.
+
+Ut mattis fringilla blandit. Nullam blandit augue id sem tristique hendrerit. Curabitur quis suscipit urna. Nullam id enim vel nisi lacinia pulvinar. Aenean maximus, massa et dictum malesuada, lectus ligula aliquet massa, nec luctus risus erat a nulla. In quis arcu velit. Fusce justo sapien, congue aliquam vestibulum vitae, vulputate sed felis. Nullam arcu magna, consectetur id imperdiet sit amet, cursus eget ipsum. Nullam nec euismod mauris. Aenean quis viverra mauris. Morbi vestibulum velit consectetur est varius, vitae vestibulum sapien blandit. Sed volutpat libero augue, quis eleifend arcu dictum vulputate. Duis non enim porttitor, pretium tellus at, posuere mi. Mauris iaculis quam vitae eros elementum, et fermentum metus hendrerit.
+
+Fusce fermentum maximus odio, at pellentesque ipsum ultricies sed. Nulla facilisi. Donec egestas sed est vitae efficitur. Vivamus vulputate sagittis orci vel lobortis. Proin eget est luctus, vestibulum orci sit amet, consequat dui. Nam nulla ligula, accumsan in nulla et, tincidunt malesuada est. Donec vel egestas velit. Proin in vulputate odio. Integer ac aliquet enim, sed vestibulum nunc. Duis rhoncus neque sit amet odio lacinia rhoncus. Nulla viverra nibh eget purus aliquam ultricies. Aenean sollicitudin ullamcorper tempor. Vivamus malesuada felis eu neque viverra, at euismod lacus condimentum. Etiam vel egestas lacus.
+
+Proin at dignissim quam. Donec hendrerit bibendum metus, quis pretium leo pharetra non. Proin finibus risus ligula, in tincidunt leo blandit in. Praesent efficitur orci sit amet varius iaculis. Nullam eu viverra massa. Vestibulum lobortis eleifend mauris, quis ultrices metus volutpat commodo. Morbi purus sem, rhoncus id vestibulum sed, malesuada quis mi. Etiam faucibus venenatis porttitor. In eu metus quis leo posuere finibus sit amet eget libero. Nunc aliquet massa eu tristique vestibulum. Curabitur aliquam consectetur ex ac facilisis. In luctus aliquam mauris sed vestibulum. Sed imperdiet libero id lacus porttitor faucibus. Suspendisse mauris erat, fermentum faucibus pretium ac, convallis non justo.
+
+%------------------------------------
+\section{Results and discussion}
+\label{sec:res}
+
+Maecenas porta ligula et diam euismod, eu cursus ante tempus. Quisque et ex posuere, iaculis arcu sit amet, dictum libero. Maecenas dolor sapien, egestas vitae iaculis eu, laoreet quis diam. Vivamus et rhoncus justo. Nam rhoncus quis tortor quis dignissim. Aliquam et iaculis est, vel elementum ipsum. Nullam enim neque, aliquam a bibendum tincidunt, posuere a dui. Morbi at nibh sit amet purus tempor viverra. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Praesent ut tortor sit amet purus posuere dignissim ut vestibulum urna (Figure~\ref{fig:e}).
+
+\begin{figure}[ht]
+    \centering
+    %\includegraphics[width=.9\linewidth]{img/fig1.png}
+    \caption{Caption of the figure}
+    \label{fig:e}
+\end{figure}
+
+Etiam venenatis malesuada fringilla. Donec vestibulum eget felis ut gravida. Mauris tellus massa, rutrum a odio a, facilisis mattis risus. Maecenas a elit eu sapien rutrum consequat in et velit. Fusce lacinia volutpat nulla vel bibendum. Fusce nec pharetra purus. Integer facilisis, eros a pharetra maximus, magna odio lacinia est, quis scelerisque ex leo ut mi. Morbi eget consequat quam. Maecenas et nisl a leo fringilla vehicula eget ut ante. Duis porta ipsum ac tincidunt tincidunt. Aenean euismod dolor vel lorem pretium, non finibus felis consectetur. Suspendisse consectetur tellus tortor, at molestie nisi eleifend vel. Etiam nec facilisis nulla.
+
+Nam ipsum nisl, ultrices at vestibulum eget, venenatis sed eros. Phasellus sit amet suscipit urna. Etiam ut lectus sed ante suscipit tempor ut at mauris. Aliquam erat volutpat. Nunc et tellus ullamcorper, tempus nisi vitae, venenatis mauris. Mauris at urna vitae lectus vehicula aliquam. Duis nec felis eget purus sodales elementum in vitae dui. Nunc ultrices ligula elit, id aliquet metus interdum nec. Donec varius gravida velit eu mattis. Etiam ex purus, semper eu convallis eget, ullamcorper eget nunc. Nam sagittis, orci in lobortis laoreet, ligula ligula bibendum nunc, eget bibendum justo neque facilisis neque. Quisque ut mollis quam. Nulla tempor sagittis nisi, eu semper lorem porta quis. Sed enim nisi, tincidunt ac nisi a, vulputate feugiat neque. Nam quis blandit nunc. Vestibulum at tincidunt lectus, et molestie massa.
+
+Mauris pulvinar lacus eu urna efficitur, quis tempus lectus varius. Proin nec efficitur eros, sit amet fringilla eros. Proin vel leo vel diam pretium condimentum a vulputate velit. Praesent facilisis orci non erat rutrum, sed varius risus volutpat. Nullam maximus efficitur elit vitae aliquam. Quisque nec gravida libero. Nullam venenatis imperdiet sapien, id tincidunt nisl suscipit dignissim. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vivamus purus sem, pharetra et pharetra efficitur, iaculis vitae dui. Morbi quis sem quis sapien porta ultrices. Vestibulum ac magna mattis, convallis nunc in, varius dolor. Praesent convallis, lacus vel vulputate blandit, dui leo malesuada velit, eu viverra massa tellus at sem. Vestibulum purus ante, tempor nec tortor et, sodales mattis nibh. Vivamus vel porta elit. Etiam nec cursus nunc.
+
+Etiam dapibus maximus dui et pharetra. Sed ut nisi blandit, pulvinar diam vestibulum, tempor arcu. Donec fringilla nisi et ornare tristique. Donec sagittis enim et ullamcorper volutpat. Vivamus aliquet magna quam, vitae faucibus turpis pellentesque id. Integer at neque non mi pharetra interdum. Quisque non posuere metus, sit amet auctor nulla. Aenean ultrices congue justo, in mattis nibh auctor vitae. Suspendisse eu odio efficitur, imperdiet erat eu, eleifend odio. Duis lobortis lectus ligula, sed rutrum ex facilisis nec. Proin dui urna, feugiat in turpis at, mattis facilisis arcu. 
+
+%------------------------------------
+\section{Conclusions and future work}
+\label{sec:cf}
+
+Etiam eros nunc, pellentesque eleifend sodales hendrerit, pretium ut lorem. Aliquam leo lectus, fringilla vel condimentum varius, mattis quis enim. Suspendisse vestibulum ipsum mauris, vitae auctor massa feugiat eget. Vivamus eros dolor, tempus in sem vitae, consectetur condimentum ipsum. Aenean tortor massa, faucibus nec turpis eu, congue imperdiet orci. Nullam congue nunc ligula, vitae tristique enim interdum ut. Sed nibh turpis, auctor eget nunc sit amet, convallis sagittis sapien. Duis non nibh lacus. Ut pellentesque nisl vitae ex venenatis, ac lacinia eros rutrum.
+
+Cras lacinia erat sollicitudin quam eleifend vestibulum. Mauris ut felis commodo, dictum risus sed, imperdiet tellus. Vestibulum ut dignissim enim. Mauris felis urna, commodo id diam sit amet, dapibus dapibus lectus. Phasellus in hendrerit est. Fusce lobortis tincidunt gravida. Donec porta consectetur nisi, ac ullamcorper enim blandit vitae. Sed vestibulum, eros ut rhoncus sodales, arcu purus dignissim lectus, ac vestibulum tellus justo non ex. Nullam scelerisque, purus id maximus aliquam, tellus eros auctor mauris, eu vestibulum nisi ante eget mi. Phasellus vitae vehicula magna, vitae fermentum erat. Aliquam risus urna, facilisis ornare iaculis vitae, suscipit ut est. Integer consectetur, nibh quis volutpat rutrum, justo nisl suscipit ligula, ut lacinia nisl eros sed lorem.
+
+Phasellus at eros in lorem pellentesque volutpat. Quisque dapibus blandit tristique. Donec massa turpis, imperdiet at congue quis, blandit eget magna. In viverra ligula eleifend, rutrum sem non, blandit ante. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin iaculis ex leo, vel malesuada ipsum auctor eget. Morbi maximus ligula arcu, sit amet lacinia enim consequat sit amet. Vivamus et erat pretium ante eleifend vestibulum vel blandit risus. Nam sit amet fermentum nulla. Aenean luctus nulla mauris, vitae vestibulum est sagittis quis. Nullam eu enim ornare, laoreet nunc et, fermentum nisi. Maecenas rutrum elit velit, tristique egestas quam pellentesque condimentum. Maecenas eu purus risus. Vestibulum ac magna in massa ornare dignissim eget et orci.
+
+\printbibliography % Imprime la bibliografía
+%\section*{Acknowledgement}
+%Agradecer a ...
+
+%------------------------------------
+\end{document}
