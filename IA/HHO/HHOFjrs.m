@@ -1,6 +1,6 @@
 clear all; close all; clc
 load('Pesos_Productos.mat')
-
+tic;
 N = 50; % Número de agentes de búsqueda
 T = 10; % Máximo número de iteraciones
 lb = 0; % límite inferior para cada elemento de la solución
@@ -10,24 +10,32 @@ iterations = 1:T; % Vector de números de iteración
 bin_capacity = 150; % Define la capacidad de los bins
 
 [Rabbit_Energy, Rabbit_Location, CNVG] = HHO(N, T, lb, ub, dim, @(x) obj_func(x, weight, bin_capacity));
-
+tiempo_transcurrido = toc;
 disp('El mejor resultado encontrado:');
 disp(['Energía del conejo: ', num2str(Rabbit_Energy)]);
 disp(['Ubicación del conejo: ', num2str(Rabbit_Location)]);
 
 figure;
-subplot(2,1,1)
+subplot(3,1,1)
 plot(iterations, CNVG, 'b-', 'LineWidth', 2);
 xlabel('Iteración');
 ylabel('Energía del conejo');
 title('Convergencia de HHO');
 
-subplot(2,1,2)
 load('contenedores.mat');
-plot(contenedores, 'b-', 'LineWidth', 2);
-xlabel('Numero de Contenedores');
+tiempo = linspace(0, tiempo_transcurrido, numel(contenedores));
+subplot(3,1,2)
+plot(tiempo,contenedores, 'b-', 'LineWidth', 2);
+xlabel('Tiempo de Ejecucion');
 ylabel('Numero de Contenedores');
 title('Convergencia de HHO');
+
+subplot(3,1,3)
+plot(Rabbit_Location, 'b-', 'LineWidth', 2);
+%plot(weight, 'b-', 'LineWidth', 2);
+
+ylabel('Mejores soluciones encontradas');
+title('Ubicacion de Conejo');
 grid on;
 
 
