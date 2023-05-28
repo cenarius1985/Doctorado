@@ -158,7 +158,7 @@ function X = initialization(N, dim, ub, lb)
         end
     end
 end
-
+%%
 function [fitness] = obj_func(x, weight, bin_capacity)
     num_bins = 0;
     contenedores=[];
@@ -177,7 +177,7 @@ function [fitness] = obj_func(x, weight, bin_capacity)
         end
 
         if ~assigned
-            num_bins = num_bins + 1
+            num_bins = num_bins + 1;
             contenedores(j)= num_bins;
             remaining_capacity(num_bins) = bin_capacity - item_weight;
         end
