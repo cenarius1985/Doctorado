@@ -2,8 +2,8 @@ clear all; close all; clc
 load('Pesos_Productos.mat')
 
 N = 50; % Número de agentes de búsqueda
-T = 1000; % Máximo número de iteraciones
-lb = 1; % límite inferior para cada elemento de la solución
+T = 10; % Máximo número de iteraciones
+lb = 0; % límite inferior para cada elemento de la solución
 ub = 150; % límite superior para cada elemento de la solución
 dim = numel(weight); % dimensión de la solución
 iterations = 1:T; % Vector de números de iteración
@@ -16,11 +16,21 @@ disp(['Energía del conejo: ', num2str(Rabbit_Energy)]);
 disp(['Ubicación del conejo: ', num2str(Rabbit_Location)]);
 
 figure;
+subplot(2,1,1)
 plot(iterations, CNVG, 'b-', 'LineWidth', 2);
 xlabel('Iteración');
 ylabel('Energía del conejo');
 title('Convergencia de HHO');
+
+subplot(2,1,2)
+load('contenedores.mat');
+plot(contenedores, 'b-', 'LineWidth', 2);
+xlabel('Numero de Contenedores');
+ylabel('Numero de Contenedores');
+title('Convergencia de HHO');
 grid on;
+
+
 %%
 
 function [Rabbit_Energy, Rabbit_Location, CNVG] = HHO(N, T, lb, ub, dim, fobj)
@@ -149,8 +159,9 @@ function X = initialization(N, dim, ub, lb)
     end
 end
 
-function fitness = obj_func(x, weight, bin_capacity)
+function [fitness] = obj_func(x, weight, bin_capacity)
     num_bins = 0;
+    contenedores=[];
     remaining_capacity = zeros(size(x));
 
     for i = 1:numel(x)
@@ -166,12 +177,14 @@ function fitness = obj_func(x, weight, bin_capacity)
         end
 
         if ~assigned
-            num_bins = num_bins + 1;
+            num_bins = num_bins + 1
+            contenedores(j)= num_bins;
             remaining_capacity(num_bins) = bin_capacity - item_weight;
         end
     end
-
+    
     fitness = num_bins;
+    save('contenedores.mat', 'contenedores');
 end
 %%
 function o=Levy(d)
